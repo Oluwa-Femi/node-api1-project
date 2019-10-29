@@ -8,14 +8,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post("/api/users", newUser);
-
 function newUser(req, res) {
   const name = req.body;
   database
     .insert(name)
     .then(user => {
-      res.status(200).json({ success: true, user });
+        res.status(200).json({
+            success: true,
+            user
+          });
+          console.log(user);
     })
     .catch(err =>
       res.status(500).json({
@@ -24,6 +26,46 @@ function newUser(req, res) {
       })
     );
 }
+
+function getUsers(req, res) {
+    database
+      .find()
+      .then(users => {
+        res.status(200).json({
+          success: true,
+          users
+        });
+      })
+      .catch(err =>
+        res.status(500).json({
+          success: false,
+          err
+        })
+      );
+  }
+  
+  function getUserById(req, res) {
+    const id = req.params.id;
+    database
+      .findById(id)
+      .then(user => {
+        res.status(200).json({
+          success: true,
+          user
+        });
+      })
+      .catch(err =>
+        res.status(500).json({
+          success: false,
+          err
+        })
+      );
+  }
+
+  app.post("/api/users", newUser);
+  app.get("/api/users", getUsers);
+  app.get("/api/users/:id", getUserById);
+  
 app.get("*", (req, res) => {
   res.send("Welcome");
 });

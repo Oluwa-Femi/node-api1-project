@@ -62,10 +62,36 @@ function getUsers(req, res) {
       );
   }
 
+  function deleteUser(req, res) {
+    const id = req.params.id;
+    database
+      .remove(id)
+      .then(user => {
+        if (user) {
+          res.status(204).json({
+            success: true,
+            user
+          });
+        } else {
+          res.status(404).json({
+            success: false,
+            message: "User not found"
+          });
+        }
+      })
+      .catch(err => {
+        res.status(500).json({
+          success: false,
+          err
+        });
+      });
+  }
+
   app.post("/api/users", newUser);
   app.get("/api/users", getUsers);
   app.get("/api/users/:id", getUserById);
-  
+  app.delete("/api/users/:id", deleteUser);
+
 app.get("*", (req, res) => {
   res.send("Welcome");
 });
